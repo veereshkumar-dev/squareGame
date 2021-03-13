@@ -3,10 +3,6 @@
 var log = console.log;
 
 const localStorage = window.localStorage;
-// const localStorage = {
-//   getItem: () => {},
-//   setItem: () => {},
-// };
 
 const DIFFICULTY = {
   EASY: 2,
@@ -44,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("startGame").addEventListener("click", (event) => {
     Square.startGame();
   });
-
 });
 
 function Game(difficulty) {
@@ -52,9 +47,11 @@ function Game(difficulty) {
   let gridSize = difficulty * difficulty;
 
   this.difficulty = difficulty;
-  this.timeLeft = 10;
+  this.timeLeft = 3;
+  this.maxTime = 12;
   this.gridSize = gridSize;
   this.score = 0;
+  this.highScore = 0;
   this.currentGreenSquareIndex = null;
   this.previousGreenSquareIndex = null;
   this.gameLooper = null;
@@ -65,7 +62,7 @@ function Game(difficulty) {
     gridSize = difficulty * difficulty;
     globalDifficulty = difficulty;
 
-    this.timeLeft = 25;
+    this.timeLeft = this.maxTime;
     this.gridSize = difficulty * difficulty;
     this.score = 0;
     this.currentGreenSquareIndex = null;
@@ -130,68 +127,88 @@ function Game(difficulty) {
     if (this.timeLeft == 0) {
       document.getElementById("time").innerText = 0;
       this.stopGame();
-    }
-    else{
+    } else {
       this.timeLeft = this.timeLeft - 1;
-      document.getElementById("time").innerText = this.timeLeft;
+      document.getElementById("time").innerText = this.timeLeft+1;
     }
-
   };
 
   this.stopGame = () => {
     if (this.timeLeft == 0) {
-      alert("game over--->");
+      document.getElementById("time").innerText = 0;
+
+      if (confirm("GAME OVER! DO you want to restart the game?")) {
+             this.startGame()
+      } else {
+        this.renderGrid()
+      }
     }
 
-    clearInterval(this.gameLooper);
-    
-    document.getElementById("startGame").innerText = 'START';
-    this.renderGrid()
+    // clearInterval(this.gameLooper);
+
+    // document.getElementById("startGame").innerText = "START";
+//    this.renderGrid();
   };
 
   this.startGame = () => {
     clearInterval(this.gameLooper);
     this.reset(globalDifficulty);
     this.renderGrid();
+
+
     let grid = this.getNextGrid();
     this.reduceTimeBy1Sec();
     this.gameLooper = setInterval(() => {
       let grid = this.getNextGrid();
       this.reduceTimeBy1Sec();
     }, 1000);
-    document.getElementById("startGame").innerText = 'RESET';
+    document.getElementById("startGame").innerText = "RESET";
 
+    
   };
 
   this.updateScore = (index, memo) => {
-    if (index == this.currentGreenSquareIndex) {
+    
+    if (
+      index == this.currentGreenSquareIndex &&
+      this.timeLeft != this.maxTime
+    ) {
       this.score = this.score + 1;
 
       if (this.score > this.getHighScore()) {
         this.setHighScore(this.score);
+
+        this.highScore =this.score
+        document.getElementById("highScore").innerText = this.highScore; 
+        
       }
-    } else {
+    } else if (
+      index != this.currentGreenSquareIndex &&
+      this.timeLeft != this.maxTime
+    ) {
       //if (this.score > 0) {
       this.score = this.score - 1;
       //}
     }
-
     document.getElementById("score").innerText = this.score;
+
   };
 
   this.updateScore_cached = () => {
     let cache = {};
     return (selection) => {
-      let actual = this.currentGreenSquareIndex;
-      if (actual in cache) {
-        console.log("Fetching from cache");
-        return cache[actual];
-      } else {
-        console.log("Calculating result");
-        cache = {};
-        cache[actual] = actual;
-        this.updateScore(selection);
-        return actual;
+      if (this.timeLeft != this.maxTime) {
+        let actual = this.currentGreenSquareIndex;
+        if (actual in cache) {
+          console.log("Fetching from cache");
+          return cache[actual];
+        } else {
+          console.log("Calculating result");
+          cache = {};
+          cache[actual] = actual;
+          this.updateScore(selection);
+          return actual;
+        }
       }
     };
   };
@@ -201,13 +218,17 @@ function Game(difficulty) {
   };
 
   this.renderGrid = () => {
-    document.getElementById("startGame").innerText = 'START';    
+    this.highScore = this.getHighScore()
+    document.getElementById("highScore").innerText = this.highScore;    
+
+    document.getElementById("startGame").innerText = "START";
     document.getElementById("score").innerText = 0;
     document.getElementById("time").innerText = 120;
 
     clearInterval(this.gameLooper);
-    this.timeLeft = 10;
+    this.timeLeft = this.maxTime;
 
+    log('globalDifficulty '+globalDifficulty)
     document
       .getElementById("difficulty_" + [globalDifficulty])
       .classList.add("active");
@@ -219,7 +240,9 @@ function Game(difficulty) {
       div.innerHTML = '<div id="' + id + '" class="tile" data-ratio="square"/>';
 
       div.addEventListener("click", (event) => {
+        if(event.target.className.includes('tile')){
         updateScoreCached(event.target.getAttribute("id").split("_")[1]);
+      }
       });
 
       return div;
@@ -233,6 +256,4 @@ function Game(difficulty) {
       grid.appendChild(createDiv("gridTile_" + i));
     }
   };
-
-
 }
