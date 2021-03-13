@@ -45,9 +45,6 @@ document.addEventListener("DOMContentLoaded", function () {
     Square.startGame();
   });
 
-  document.getElementById("stopGame").addEventListener("click", (event) => {
-    Square.stopGame();
-  });
 });
 
 function Game(difficulty) {
@@ -55,13 +52,16 @@ function Game(difficulty) {
   let gridSize = difficulty * difficulty;
 
   this.difficulty = difficulty;
+  this.timeLeft = 10;
+  this.gridSize = gridSize;
+  this.score = 0;
+  this.currentGreenSquareIndex = null;
+  this.previousGreenSquareIndex = null;
+  this.gameLooper = null;
 
   this.reset = (difficulty) => {
     log("reset :" + difficulty);
-    document.getElementById("score").innerText = 0;
-    document.getElementById("time").innerText = 120;
     clearInterval(this.gameLooper);
-
     gridSize = difficulty * difficulty;
     globalDifficulty = difficulty;
 
@@ -128,12 +128,14 @@ function Game(difficulty) {
 
   this.reduceTimeBy1Sec = () => {
     if (this.timeLeft == 0) {
-      document.getElementById("time").innerText = this.timeLeft;
+      document.getElementById("time").innerText = 0;
       this.stopGame();
     }
+    else{
+      this.timeLeft = this.timeLeft - 1;
+      document.getElementById("time").innerText = this.timeLeft;
+    }
 
-    document.getElementById("time").innerText = this.timeLeft;
-    this.timeLeft = this.timeLeft - 1;
   };
 
   this.stopGame = () => {
@@ -142,9 +144,13 @@ function Game(difficulty) {
     }
 
     clearInterval(this.gameLooper);
+    
+    document.getElementById("startGame").innerText = 'START';
+    this.renderGrid()
   };
 
   this.startGame = () => {
+    clearInterval(this.gameLooper);
     this.reset(globalDifficulty);
     this.renderGrid();
     let grid = this.getNextGrid();
@@ -153,6 +159,8 @@ function Game(difficulty) {
       let grid = this.getNextGrid();
       this.reduceTimeBy1Sec();
     }, 1000);
+    document.getElementById("startGame").innerText = 'RESET';
+
   };
 
   this.updateScore = (index, memo) => {
@@ -193,6 +201,10 @@ function Game(difficulty) {
   };
 
   this.renderGrid = () => {
+    document.getElementById("startGame").innerText = 'START';    
+    document.getElementById("score").innerText = 0;
+    document.getElementById("time").innerText = 120;
+
     clearInterval(this.gameLooper);
     this.timeLeft = 10;
 
@@ -222,10 +234,5 @@ function Game(difficulty) {
     }
   };
 
-  this.timeLeft = 10;
-  this.gridSize = gridSize;
-  this.score = 0;
-  this.currentGreenSquareIndex = null;
-  this.previousGreenSquareIndex = null;
-  this.gameLooper = null;
+
 }
