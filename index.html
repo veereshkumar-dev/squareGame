@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Square</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="menuSection">
+        <div class="heading">
+          <div class="message left">A VERY</div>
+          <div class="mainTitle">SQUARE</div>
+          <div class="message right">GAME</div>
+        </div>
+
+        <div class="description">
+          <div class="descriptionHead">HOW TO PLAY</div>
+          <div class="descriptionContent">
+            Click on the green square as many times as possible within 120
+            seconds
+          </div>
+        </div>
+
+        <div class="dificultySection description">
+          <div class="button" id="difficulty_2">Easy</div>
+          <div class="button" id="difficulty_3">Medium</div>
+          <div class="button" id="difficulty_4">Hard</div>
+        </div>
+
+        <div class="timeSection">
+          <div class="timeTitle">TIME LEFT</div>
+          <div id="time">120</div>
+        </div>
+
+        <div class="timeSection">
+          <div class="timeTitle">Score</div>
+          <div id="score">0</div>
+        </div>
+
+        <div class="buttonSection">
+          <div class="button" id="startGame">Start/Reset Game</div>
+        </div>
+      </div>
+
+      <!-- <div class="divider"></div> -->
+
+      <div class="gameSection">
+        <div id="grid"></div>
+      </div>
+    </div>
+    <script type="module" src="./index.js"></script>
+    <script type="module" src="./squareLogic.js"></script>
+  </body>
+</html>
