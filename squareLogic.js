@@ -1,8 +1,5 @@
 "use strict";
 
-var log = console.log;
-
-const localStorage = window.localStorage;
 
 const DIFFICULTY = {
   EASY: 3,
@@ -10,9 +7,9 @@ const DIFFICULTY = {
   HARD: 6,
 };
 
-
-
-let globalDifficulty = null;
+var log = console.log;
+var localStorage = window.localStorage;
+var globalDifficulty = null;
 var Square = null;
 
 //Binding event handlers for the UI Elements
