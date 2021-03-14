@@ -7,7 +7,7 @@ const DIFFICULTY = {
   HARD: 6,
 };
 
-var localStorage = window.localStorage;
+
 var globalDifficulty = null;
 var Square = null;
 
@@ -83,21 +83,21 @@ function Game(difficulty) {
 
   //gets the high score entry from localstorage
   this.getHighScore = () => {
-    let highScore = localStorage.getItem("highScore");
+    let highScore = window.localStorage.getItem("highScore");
     if (highScore) {
       return highScore;
     }
 
     //if no game has been played yet. set the initial high score to 0
     else {
-      localStorage.setItem("highScore", 0);
+      window.localStorage.setItem("highScore", 0);
       return 0;
     }
   };
 
   //update the high score entry in localstorage
   this.setHighScore = (highScore) => {
-    localStorage.setItem("highScore", highScore);
+    window.localStorage.setItem("highScore", highScore);
   };
 
 
