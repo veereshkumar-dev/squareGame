@@ -110,7 +110,7 @@ body {
   width: 200px;
   text-align: left;
 
-  font-size: 20px;
+  font-size: 15px;
   font-weight: bold;
 }
 
@@ -192,7 +192,7 @@ on screens smaller than 800px in height
   }
 
   .scoreContainer .scoretitle{
-    font-size: 16px;
+    font-size: 15px;
   }
 }
 
