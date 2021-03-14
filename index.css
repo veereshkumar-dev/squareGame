@@ -1,10 +1,11 @@
-html {
-  font-family: "Helvetica";
-}
+  /* Set font for entire page */
 
 * {
   font-family: Calibri !important;
   color: #243244;
+}
+* {
+  box-sizing: border-box;
 }
 
 body {
@@ -13,33 +14,60 @@ body {
   text-align: center;
   font-size: 1.75em;
   padding: 0 0.5em;
-
   background: #eef2f3;
+
+  margin: 0;
+  padding: 0;
 }
+
+/* set width of cell depending on the number of tiles per row */
+#grid .cell_3 {
+  flex-basis: calc(100% / 3);
+  float: left;
+  padding: 10px;
+}
+
+#grid .cell_4 {
+  flex-basis: calc(100% / 4);
+  float: left;
+  padding: 10px;
+}
+
+#grid .cell_6 {
+  flex-basis: calc(100% / 6);
+  float: left;
+  padding: 10px;
+}
+
+
+/* Resize the grid maintainig aspect ratio of 1x1 (a square) */
+.tile {
+  width: 100%;
+  height: 0;
+  position: relative;
+}
+.tile[data-ratio="square"] {
+  padding-top: 100%;
+}
+
+.tile > * {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+
 
 .container {
   justify-content: center;
 }
 
-.divider {
-  background: rgb(233, 231, 231);
-  width: 1.5px;
-  margin-top: 5%;
-  margin-bottom: 5%;
-}
-
-#timer {
-  font-size: 2em;
-}
-
 .message {
-  /* font-variant: small-caps; */
   padding: 0.5em;
   color: #243244;
   font-size: 15px;
-}
-
-.message .left {
 }
 
 .heading {
@@ -78,13 +106,14 @@ body {
   clear: both;
 }
 
-.timeSection {
+.scoreSection {
   width: 200px;
   text-align: left;
 
   font-size: 20px;
   font-weight: bold;
 }
+
 
 #grid {
   display: flex;
@@ -110,15 +139,75 @@ body {
 
 .menuSection {
   background: #eef2f3;
-
   display: flex;
   flex-direction: column;
   padding-right: 40px;
   width: 300px;
+  padding-left: 40px;
 }
 
 .menuSection > div {
   margin-bottom: 40px;
+}
+
+.scoreContainer {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0px !important;
+}
+.scoreContainer > div {
+  flex-direction: column;
+  margin-bottom: 40px;
+}
+
+/* 
+change the layout of the scores from verticle to horizontal 
+on screens smaller than 800px in height
+*/
+@media only screen and (max-height: 800px) {
+  .scoreContainer {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 10px !important;;
+  }
+
+  .scoreContainer > div {
+    margin-bottom: 5px;
+  }
+
+  .scoreContainer .scoretitle{
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .scoreContainer {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 20px !important;;
+  }
+
+  .scoreContainer > div {
+    margin-bottom: 5px;
+  }
+
+  .scoreContainer .scoretitle{
+    font-size: 16px;
+  }
+}
+
+/* hide the how to play section for screens smaller than 800px in width */
+@media only screen and (max-height: 500px) {
+  .description {
+    display: none;
+  }
+}
+
+/* hide the how to play section for screens smaller than 800px in width */
+@media only screen and (max-width: 700px) {
+  .description {
+    display: none;
+  }
 }
 
 .gameSection {
@@ -126,20 +215,14 @@ body {
   align-items: center;
   justify-content: center;
 
-  width: calc(100vh - 300px); /* luck: header has a fixed height , remove it */
+  padding-right: 40px;
+  width: calc(100vh - 300px);
 
   max-width: 80vh;
   max-height: 80vh;
 
   flex: 1;
-  overflow: auto; /* can be usefull */
-}
-html,
-body {
-  /* set the frame */
-  margin: 0;
-  height: 100vh;
-  display: flex;
+  overflow: auto;
 }
 
 .container {
@@ -151,58 +234,13 @@ body {
   align-items: center;
 }
 
-* {
-  box-sizing: border-box;
-}
-body {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-body background white {
-  width: 100%;
-}
 #grid {
   display: flex;
   flex-wrap: wrap;
   flex-grow: 1;
 }
-#grid .cell_3 {
-  flex-basis: calc(100% / 3);
-  float: left;
-  padding: 10px;
-}
 
-#grid .cell_4 {
-  flex-basis: calc(100% / 4);
-  float: left;
-  padding: 10px;
-}
 
-#grid .cell_6 {
-  flex-basis: calc(100% / 6);
-  float: left;
-  padding: 10px;
-}
-
-.tile {
-  width: 100%;
-  height: 0;
-  position: relative;
-}
-.tile[data-ratio="square"] {
-  padding-top: 100%;
-}
-.tile[data-ratio="4:3"] {
-  padding-top: 75%;
-}
-.tile > * {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
 
 .buttonSection {
   color: white;

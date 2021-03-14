@@ -7,7 +7,6 @@ const DIFFICULTY = {
   HARD: 6,
 };
 
-var log = console.log;
 var localStorage = window.localStorage;
 var globalDifficulty = null;
 var Square = null;
@@ -67,7 +66,6 @@ function Game(difficulty) {
 
   //resets the state of the game
   this.reset = (difficulty) => {
-    log("reset :" + difficulty);
     clearInterval(this.gameLooper);
     gridSize = difficulty * difficulty;
     globalDifficulty = difficulty;
@@ -238,10 +236,6 @@ function Game(difficulty) {
     };
   };
 
-  this.handlePlayerClick = (element) => {
-    log(element);
-  };
-
   this.renderGrid = () => {
     this.highScore = this.getHighScore()
     document.getElementById("highScore").innerText = this.highScore;   
@@ -253,7 +247,6 @@ function Game(difficulty) {
     clearInterval(this.gameLooper);
     this.timeLeft = this.maxTime;
 
-    log('globalDifficulty '+globalDifficulty)
     document
       .getElementById("difficulty_" + [globalDifficulty])
       .classList.add("active");
