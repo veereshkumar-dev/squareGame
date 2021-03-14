@@ -10,6 +10,8 @@ const DIFFICULTY = {
   HARD: 6,
 };
 
+
+
 let globalDifficulty = null;
 var Square = null;
 
@@ -53,13 +55,14 @@ function Game(difficulty) {
   this.difficulty = difficulty;
   this.timeLeft = 0;
 
-  //maximum time the game is active
-  this.maxTime = 12;
+  //maximum time the game is active 120sec
+  this.maxTime = 120;
   this.gridSize = gridSize;
   this.score = 0;
   this.highScore = 0;
 
   this.currentGreenSquareIndex = null;
+  //needed to make sure different tile is highlighted everytime
   this.previousGreenSquareIndex = null;
   
   //holds the referance to setInterval incase its needed to be reset
@@ -82,6 +85,8 @@ function Game(difficulty) {
     this.renderGrid();
   };
 
+
+  //gets the high score entry from localstorage
   this.getHighScore = () => {
     let highScore = localStorage.getItem("highScore");
     if (highScore) {
@@ -101,6 +106,7 @@ function Game(difficulty) {
   };
 
 
+  //Generates the next grid / next highlighted square
   this.getNextGrid = () => {
      let randomIndex = Math.floor(Math.random() * this.gridSize);
 
@@ -127,6 +133,8 @@ function Game(difficulty) {
 
   };
 
+
+  //Decrements the time left by 1 second
   this.reduceTimeBy1Sec = () => {
     if (this.timeLeft == 0) {
       document.getElementById("time").innerText = 0;
@@ -137,16 +145,19 @@ function Game(difficulty) {
     }
   };
 
+
+  //Shows a confirmation where user can choose to restart
+  //or stop the game so that he/she can change the difficulty
   this.gameOver = () => {
     if (this.timeLeft == 0) {
       document.getElementById("time").innerText = 0;
 
       if (confirm("GAME OVER!\nClick OK to restart the game\nClick Cancel to change difficulty")) {
-          //reset the game and restart
+          //render a new game and start it
           this.startGame()
       } else {
 
-        //reset the game without starting it
+        //render a new game without starting it
         this.renderGrid()
       }
     }
@@ -155,6 +166,7 @@ function Game(difficulty) {
 
 
   this.startGame = () => {
+    //clears the previous setInterval loop
     clearInterval(this.gameLooper);
     this.reset(globalDifficulty);
     this.renderGrid();
@@ -191,6 +203,8 @@ function Game(difficulty) {
       index != this.currentGreenSquareIndex &&
       this.timeLeft != this.maxTime
     ) {
+
+      //uncomment this if block to disable score going into onegative values
       //if (this.score > 0) {
       this.score = this.score - 1;
       //}
@@ -199,20 +213,29 @@ function Game(difficulty) {
 
   };
 
+  //Use Memoization to limit only one click per second/per highlighted square
+  //use green square index as the cache property
+  //ignore subsequent clicks for the same index
   this.updateScore_cached = () => {
     let cache = {};
     return (selection) => {
       if (this.timeLeft != this.maxTime) {
-        let actual = this.currentGreenSquareIndex;
-        if (actual in cache) {
-          console.log("Fetching from cache");
-          return cache[actual];
+        let currentIndexPosition = this.currentGreenSquareIndex;
+        if (currentIndexPosition in cache) {
+          //subsequent clicks are ignored till the cell changes its position
+          //return cache[currentIndexPosition];
         } else {
-          console.log("Calculating result");
+          //first click when a perticular cell is highlighted
+          //considered as valid
+
+          //reset historical index cache to only previous index
+          //because cells can be highlighted multiple times
           cache = {};
-          cache[actual] = actual;
+          cache[currentIndexPosition] = currentIndexPosition;
+
+          //update the score
           this.updateScore(selection);
-          return actual;
+          //return actual;
         }
       }
     };
@@ -224,7 +247,7 @@ function Game(difficulty) {
 
   this.renderGrid = () => {
     this.highScore = this.getHighScore()
-    document.getElementById("highScore").innerText = this.highScore;    
+    document.getElementById("highScore").innerText = this.highScore;   
 
     document.getElementById("startGame").innerText = "START";
     document.getElementById("score").innerText = 0;
@@ -253,8 +276,9 @@ function Game(difficulty) {
       return div;
     };
 
-    const grid = document.querySelector("#grid");
 
+    const grid = document.querySelector("#grid");
+    //discard existing tiles while creating a new game
     document.getElementById("grid").innerHTML = "";
 
     for (let i = 0; i < this.gridSize; i++) {
