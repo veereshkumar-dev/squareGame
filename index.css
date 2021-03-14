@@ -75,6 +75,7 @@ body {
 .description .descriptionContent {
   float: left;
   text-align: left;
+  clear: both;
 }
 
 .timeSection {
@@ -166,12 +167,6 @@ body background white {
   flex-wrap: wrap;
   flex-grow: 1;
 }
-#grid .cell_2 {
-  flex-basis: calc(100% / 2);
-  float: left;
-  padding: 10px;
-}
-
 #grid .cell_3 {
   flex-basis: calc(100% / 3);
   float: left;
@@ -180,6 +175,12 @@ body background white {
 
 #grid .cell_4 {
   flex-basis: calc(100% / 4);
+  float: left;
+  padding: 10px;
+}
+
+#grid .cell_6 {
+  flex-basis: calc(100% / 6);
   float: left;
   padding: 10px;
 }

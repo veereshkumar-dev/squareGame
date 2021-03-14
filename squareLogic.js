@@ -5,14 +5,15 @@ var log = console.log;
 const localStorage = window.localStorage;
 
 const DIFFICULTY = {
-  EASY: 2,
-  MEDIUM: 3,
-  HARD: 4,
+  EASY: 3,
+  MEDIUM: 4,
+  HARD: 6,
 };
 
 let globalDifficulty = null;
 var Square = null;
 
+//Binding event handlers for the UI Elements
 document.addEventListener("DOMContentLoaded", function () {
   globalDifficulty = DIFFICULTY.MEDIUM;
   Square = new Game(globalDifficulty);
@@ -42,20 +43,29 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+
+//Isolated/Encapulated datastructure for Game related logic (conceptual class)
 function Game(difficulty) {
+  //update the global difficulty everytime its changed
   globalDifficulty = difficulty;
   let gridSize = difficulty * difficulty;
 
   this.difficulty = difficulty;
-  this.timeLeft = 3;
+  this.timeLeft = 0;
+
+  //maximum time the game is active
   this.maxTime = 12;
   this.gridSize = gridSize;
   this.score = 0;
   this.highScore = 0;
+
   this.currentGreenSquareIndex = null;
   this.previousGreenSquareIndex = null;
+  
+  //holds the referance to setInterval incase its needed to be reset
   this.gameLooper = null;
 
+  //resets the state of the game
   this.reset = (difficulty) => {
     log("reset :" + difficulty);
     clearInterval(this.gameLooper);
@@ -78,77 +88,71 @@ function Game(difficulty) {
       return highScore;
     }
 
-    //First run when highScore is not present in localStorage
+    //if no game has been played yet. set the initial high score to 0
     else {
       localStorage.setItem("highScore", 0);
       return 0;
     }
   };
 
+  //update the high score entry in localstorage
   this.setHighScore = (highScore) => {
     localStorage.setItem("highScore", highScore);
   };
 
+
   this.getNextGrid = () => {
-    if (this.timeLeft == 121) {
-      this.reduceTimeBy1Sec();
-      return;
-    }
-
-    if (this.timeLeft == 0) {
-      return;
-    }
-
-    let randomIndex = Math.floor(Math.random() * this.gridSize);
+     let randomIndex = Math.floor(Math.random() * this.gridSize);
 
     //Make sure a different tile is activated on every run
     if (randomIndex == this.currentGreenSquareIndex) {
+      //If new random number is same as green tile re-run the randome number generation
       return this.getNextGrid();
     }
 
     this.previousGreenSquareIndex = this.currentGreenSquareIndex;
     this.currentGreenSquareIndex = randomIndex;
 
-    //log(this.previousGreenSquareIndex);
+    //remove highlight/green background form all the tiiles
     if (this.previousGreenSquareIndex != null) {
       document
         .getElementById("gridTile_" + this.previousGreenSquareIndex)
         .classList.remove("active");
     }
+
+    //apply highlight to respective tile 
     document
       .getElementById("gridTile_" + this.currentGreenSquareIndex)
       .classList.add("active");
 
-    grid[randomIndex] = 1;
-    return grid;
   };
 
   this.reduceTimeBy1Sec = () => {
     if (this.timeLeft == 0) {
       document.getElementById("time").innerText = 0;
-      this.stopGame();
+      this.gameOver();
     } else {
       this.timeLeft = this.timeLeft - 1;
       document.getElementById("time").innerText = this.timeLeft+1;
     }
   };
 
-  this.stopGame = () => {
+  this.gameOver = () => {
     if (this.timeLeft == 0) {
       document.getElementById("time").innerText = 0;
 
-      if (confirm("GAME OVER! DO you want to restart the game?")) {
-             this.startGame()
+      if (confirm("GAME OVER!\nClick OK to restart the game\nClick Cancel to change difficulty")) {
+          //reset the game and restart
+          this.startGame()
       } else {
+
+        //reset the game without starting it
         this.renderGrid()
       }
     }
 
-    // clearInterval(this.gameLooper);
-
-    // document.getElementById("startGame").innerText = "START";
-//    this.renderGrid();
   };
+
 
   this.startGame = () => {
     clearInterval(this.gameLooper);
@@ -156,10 +160,11 @@ function Game(difficulty) {
     this.renderGrid();
 
 
-    let grid = this.getNextGrid();
+    this.getNextGrid();
     this.reduceTimeBy1Sec();
+
     this.gameLooper = setInterval(() => {
-      let grid = this.getNextGrid();
+      this.getNextGrid();
       this.reduceTimeBy1Sec();
     }, 1000);
     document.getElementById("startGame").innerText = "RESET";
